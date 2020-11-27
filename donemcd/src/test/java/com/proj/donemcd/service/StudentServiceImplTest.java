@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -66,6 +67,16 @@ public class StudentServiceImplTest {
         }
 
     }
+
+    @Test
+    public void saveStudentDetails(){
+        StudentDto actualStudentDto = StudentDto.builder().name("Srinu").email("Srinu@gmail.com").book("LapTop").build();
+        Student expectedStudent = Student.builder().name("Srinu").email("Srinu@gmail.com").book("LapTop").build();
+        studentServiceImpl.saveStudentDetails(actualStudentDto);
+        verify(studentRepository).save(expectedStudent);
+    }
+
+
 
     private List<Student> createStudentDetails(){
         List<Student> studentList = new ArrayList<>();

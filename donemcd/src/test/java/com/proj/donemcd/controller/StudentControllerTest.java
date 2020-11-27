@@ -23,9 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringRunner.class)       
 @WebMvcTest(StudentController.class)
 public class StudentControllerTest {
 
@@ -100,6 +101,27 @@ public class StudentControllerTest {
         Assert.assertEquals("{\"errorCode\":500,\"message\":\"Error\"}",mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.OK).body(studentDto);
         Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+    }
+    @Test
+    public void saveStudentDetails() throws Exception {
+        StudentDto studentDto = StudentDto.builder().name("Srinu").email("Srinu@gmail.com").book("LapTop").build();
+        String inputJson = mapToJson(studentDto);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/insertStudentDetails")
+                .content(inputJson).contentType(MediaType.APPLICATION_STREAM_JSON_VALUE);
+        MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
+        verify(studentService).saveStudentDetails(studentDto);
+        Assert.assertEquals("{\"errorCode\":0,\"message\":\"created\"}",mvcResult.getResponse().getContentAsString());
+        int status = mvcResult.getResponse().getStatus();
+        Assert.assertEquals(200,status);
+    }
+    @Test
+    public void saveStudentDetails_InvalidParameters() throws Exception {
+        StudentDto studentDto = new StudentDto();
+        String inputJson = mapToJson(studentDto);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/insertStudentDetails")
+                .content(inputJson).contentType(MediaType.APPLICATION_STREAM_JSON_VALUE);
+        MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
+        Assert.assertEquals("{\"Errors\":{\"Book \":\"Student book cannot be null\",\"name\":\"Student name cannot be null\",\"Email \":\"Student email cannot be null\"}}",mvcResult.getResponse().getContentAsString());
     }
 
     private String mapToJson(Object obj) throws JsonProcessingException {
