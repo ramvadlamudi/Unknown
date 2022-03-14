@@ -25,7 +25,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDto> findAllStudents() {
+
         List<Student> students = studentRepository.findAll();
+        System.out.println("student size "+students.size());
        if(students != null && !students.isEmpty()) {
            return convertToStudentDto(students);
        }
@@ -43,9 +45,31 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public Optional<MemberDto> getMemberDetailsById(long id) {
+        Optional<Member> optionalMember = memberRepository.findById(id);
+        if(optionalMember.isPresent()) {
+            MemberDto memberDto = convertMember(optionalMember.get());
+            return Optional.of(memberDto);
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public void saveStudentDetails(StudentDto studentDto) {
         Student student = buildStudent(studentDto);
+        System.out.println("enter student "+student);
         studentRepository.save(student);
+    }
+
+    @Override
+    public void saveMemberDetails(MemberDto memberDto) {
+        Member member = new Member();
+        if(memberDto.getId() != null){
+            member = buildMemberwithid(memberDto);
+        } else {
+            member = buildMember(memberDto);
+        }
+        memberRepository.save(member);
     }
 
     @Override
@@ -60,6 +84,11 @@ public class StudentServiceImpl implements StudentService {
             return convertToMemberDto(members);
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public void deleteMemberDetails(long id) {
+        memberRepository.deleteById(id);
     }
 
     private List<StudentDto> convertToStudentDto(List<Student> students) {
@@ -93,5 +122,15 @@ public class StudentServiceImpl implements StudentService {
     private Student buildStudent(StudentDto studentDto) {
         return Student.builder().id(studentDto.getId()).name(studentDto.getName())
                 .email(studentDto.getEmail()).book(studentDto.getBook()).build();
+    }
+
+    private Member buildMember(MemberDto memberDto) {
+        return Member.builder().firstName(memberDto.getFirstName()).lastName(memberDto.getLastName())
+                .jobTitle(memberDto.getJobTitle()).team(memberDto.getTeam()).status(memberDto.getStatus()).build();
+    }
+
+    private Member buildMemberwithid(MemberDto memberDto) {
+        return Member.builder().id(memberDto.getId()).firstName(memberDto.getFirstName()).lastName(memberDto.getLastName())
+                .jobTitle(memberDto.getJobTitle()).team(memberDto.getTeam()).status(memberDto.getStatus()).build();
     }
 }

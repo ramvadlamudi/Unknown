@@ -19,6 +19,7 @@ public class StudentController {
 
     @GetMapping("/Students")
     public ResponseEntity<?> getAllStudentDetails(){
+        System.out.println("Enter the Student details");
         List<StudentDto> studentDtoList = studentService.findAllStudents();
         if(studentDtoList.isEmpty()) {
             return new ResponseEntity<>("StudentDetails are empty",HttpStatus.NOT_FOUND);
@@ -33,8 +34,21 @@ public class StudentController {
         }
         return new ResponseEntity<List>(memberDetailsList, HttpStatus.OK);
     }
-    @GetMapping("/studentId")
-    public ResponseEntity<?> getStudentDetailsById(@RequestParam long id) {
+
+    @GetMapping("/memberId/{id}")
+    public ResponseEntity<?> getMemberDetailsById(@PathVariable long id) {
+        System.out.print("print id=================> "+id);
+        Optional<MemberDto> optionalMemberDto=studentService.getMemberDetailsById(id);
+        if(!optionalMemberDto.isPresent()) {
+            return new ResponseEntity<>("MemberDetails are empty",HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(optionalMemberDto.get(), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/studentId/{id}")
+    public ResponseEntity<?> getStudentDetailsById(@PathVariable long id) {
+
         Optional<StudentDto> optionalStudentDto=studentService.getStudentDetailsById(id);
         if(!optionalStudentDto.isPresent()) {
             return new ResponseEntity<>("StudentDetails are empty",HttpStatus.NOT_FOUND);
@@ -54,10 +68,28 @@ public class StudentController {
         return ResponseEntity.ok(new Response(0,"created"));
 
     }
+    @PostMapping("/insertMemberDetails")
+    public ResponseEntity<?> saveMemberDetails(@RequestBody MemberDto memberDto) {
+        /*System.out.println("enter saveMemberDetails "+memberDto);
+        ResponseEntity<?> validate = (ResponseEntity<?>) validateMemberDetails(memberDto);
+        if(validate!= null){
+            return ResponseEntity.badRequest().body(validate.getBody());
+        }*/
+        studentService.saveMemberDetails(memberDto);
+        return ResponseEntity.ok(new Response(0,"created"));
+
+    }
+
     @DeleteMapping("/deleteStudentDetails")
     public ResponseEntity<?> deleteStudentDetailsById(@RequestParam long id) {
         System.out.println("Student id "+id);
         studentService.deleteStudentDetails(id);
+        return ResponseEntity.ok(new Response(0,"created"));
+    }
+
+    @DeleteMapping("/deleteMemberDetails/{id}")
+    public ResponseEntity<?> deleteMemberDetailsById(@PathVariable long id) {
+        studentService.deleteMemberDetails(id);
         return ResponseEntity.ok(new Response(0,"created"));
     }
 
@@ -81,6 +113,26 @@ public class StudentController {
         }
         if(studentDto.getBook() == null || "".equals(studentDto.getBook())) {
             getAllErrors.put("Book ", "Student book cannot be null");
+        }
+        return getAllErrors;
+    }
+
+    private Map<String,String> validateMemberDetails(MemberDto memberDto) {
+        Map<String,String> getAllErrors = new HashMap<>();
+        if(memberDto.getFirstName() == null || "".equals(memberDto.getFirstName())) {
+            getAllErrors.put("firstName", "Member firstName cannot be null");
+        }
+        if(memberDto.getLastName() == null || "".equals(memberDto.getLastName())) {
+            getAllErrors.put("lastName ", "Member lastName cannot be null");
+        }
+        if(memberDto.getJobTitle() == null || "".equals(memberDto.getJobTitle())) {
+            getAllErrors.put("JobTitle ", "Member JobTitle cannot be null");
+        }
+        if(memberDto.getTeam() == null || "".equals(memberDto.getTeam())) {
+            getAllErrors.put("Team ", "Member Team cannot be null");
+        }
+        if(memberDto.getStatus() == null || "".equals(memberDto.getStatus())) {
+            getAllErrors.put("Status ", "Member Status cannot be null");
         }
         return getAllErrors;
     }

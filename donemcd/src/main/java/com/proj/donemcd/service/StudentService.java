@@ -10,7 +10,10 @@ public interface StudentService {
 
     List<StudentDto> findAllStudents();
     Optional<StudentDto> getStudentDetailsById(long id);
+    Optional<MemberDto> getMemberDetailsById(long id);
     void saveStudentDetails(StudentDto studentDto);
+    void saveMemberDetails(MemberDto memberDto);
     void deleteStudentDetails(long id);
     List<MemberDto> findAllMembers();
+    void deleteMemberDetails(long id);
 }
