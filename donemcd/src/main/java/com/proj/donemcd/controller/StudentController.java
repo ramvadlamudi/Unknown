@@ -48,7 +48,6 @@ public class StudentController {
 
     @GetMapping("/studentId/{id}")
     public ResponseEntity<?> getStudentDetailsById(@PathVariable long id) {
-
         Optional<StudentDto> optionalStudentDto=studentService.getStudentDetailsById(id);
         if(!optionalStudentDto.isPresent()) {
             return new ResponseEntity<>("StudentDetails are empty",HttpStatus.NOT_FOUND);

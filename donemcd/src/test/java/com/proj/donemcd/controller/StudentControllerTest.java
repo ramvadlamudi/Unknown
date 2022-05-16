@@ -74,8 +74,9 @@ public class StudentControllerTest {
         StudentDto studentDto= createStudentDto();
         when(studentService.getStudentDetailsById(1)).thenReturn(Optional.of(studentDto));
         String inputJson = mapToJson(studentDto);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/studentId").param("id","1");
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/studentId/1").accept(MediaType.APPLICATION_JSON);
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
+        System.out.println(mvcResult.getResponse().getContentAsString());
         Assert.assertEquals(inputJson,mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.OK).body(studentDto);
         Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
@@ -85,7 +86,7 @@ public class StudentControllerTest {
     public void getStudentDetailsById_Empty() throws Exception {
         Optional<StudentDto> studentDto= Optional.empty();
         when(studentService.getStudentDetailsById(1l)).thenReturn(studentDto);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/studentId").param("id","1");
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/studentId/1").accept(MediaType.APPLICATION_JSON);
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
         Assert.assertEquals("StudentDetails are empty",mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).body(studentDto);
@@ -96,7 +97,7 @@ public class StudentControllerTest {
     public void getStudentDetailsById_Exception() throws Exception {
         StudentDto studentDto= createStudentDto();
         when(studentService.getStudentDetailsById(1)).thenThrow(new RuntimeException("Error"));
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/studentId").param("id","1");
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/studentId/1").accept(MediaType.APPLICATION_JSON);
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
         Assert.assertEquals("{\"errorCode\":500,\"message\":\"Error\"}",mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.OK).body(studentDto);
