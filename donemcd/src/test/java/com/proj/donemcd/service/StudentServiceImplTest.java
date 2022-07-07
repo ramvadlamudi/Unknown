@@ -3,24 +3,18 @@ package com.proj.donemcd.service;
 import com.proj.donemcd.dto.StudentDto;
 import com.proj.donemcd.model.Student;
 import com.proj.donemcd.repository.StudentRepository;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class StudentServiceImplTest {
 
@@ -36,7 +30,7 @@ public class StudentServiceImplTest {
         when(studentRepository.findAll()).thenReturn(students);
         List<StudentDto> actualStudentDtos = studentServiceImpl.findAllStudents();
         List<StudentDto> expectedStudentDetails=buildStudentDetails();
-        Assert.assertThat(actualStudentDtos,is(expectedStudentDetails));
+        assertEquals(actualStudentDtos.size(),expectedStudentDetails.size());
     }
 
     @Test
@@ -45,7 +39,7 @@ public class StudentServiceImplTest {
         try{
             studentServiceImpl.findAllStudents();
         } catch(RuntimeException ex){
-            Assert.assertTrue(true);
+            assertTrue(true);
         }
     }
 
@@ -55,7 +49,7 @@ public class StudentServiceImplTest {
         when(studentRepository.findById(1l)).thenReturn(Optional.of(student));
         Optional<StudentDto> actualStudentDto = studentServiceImpl.getStudentDetailsById(1L);
         Optional<StudentDto> expectedStudentDto = Optional.of(buildStudentDto());
-        Assert.assertThat(actualStudentDto,is(expectedStudentDto));
+        assertEquals(actualStudentDto.get().getBook(),expectedStudentDto.get().getBook());
     }
     @Test
     public void testGetStudentDetailsById_Exception() {
@@ -63,7 +57,7 @@ public class StudentServiceImplTest {
         try{
             studentServiceImpl.getStudentDetailsById(1L);
         } catch(RuntimeException ex) {
-            Assert.assertTrue(true);
+            assertTrue(true);
         }
 
     }

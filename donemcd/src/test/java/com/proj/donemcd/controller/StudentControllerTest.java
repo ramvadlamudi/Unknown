@@ -4,30 +4,39 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proj.donemcd.dto.StudentDto;
 import com.proj.donemcd.service.StudentService;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)       
-@WebMvcTest(StudentController.class)
+
+@SpringBootTest
+@AutoConfigureMockMvc
 public class StudentControllerTest {
 
     @Autowired
@@ -42,9 +51,9 @@ public class StudentControllerTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/Students").accept(MediaType.APPLICATION_JSON);
         MvcResult mvcResult= mockMvc.perform(requestBuilder).andReturn();
         String inputJson = mapToJson(studentDtos);
-        Assert.assertEquals(inputJson,mvcResult.getResponse().getContentAsString());
+        assertEquals(inputJson,mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.OK).body(studentDtos);
-        Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
     }
 
     @Test
@@ -53,20 +62,20 @@ public class StudentControllerTest {
         when(studentService.findAllStudents()).thenReturn(studentDtos);
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/Students").accept(MediaType.APPLICATION_JSON);
         MvcResult mvcResult= mockMvc.perform(requestBuilder).andReturn();
-        Assert.assertEquals("StudentDetails are empty",mvcResult.getResponse().getContentAsString());
+        assertEquals("StudentDetails are empty",mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).body(studentDtos);
-        Assert.assertEquals(HttpStatus.NOT_FOUND,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND,responseEntity.getStatusCode());
     }
 
     @Test
-    public void getAllStudentDetails_Exception() throws Exception {
+   public void getAllStudentDetails_Exception() throws Exception {
         List<StudentDto> studentDtos=  createStudentDetails();
         when(studentService.findAllStudents()).thenThrow(new RuntimeException("Error"));
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/Students").accept(MediaType.APPLICATION_JSON);
         MvcResult mvcResult= mockMvc.perform(requestBuilder).andReturn();
-        Assert.assertEquals("{\"errorCode\":500,\"message\":\"Error\"}",mvcResult.getResponse().getContentAsString());
+        assertEquals("{\"errorCode\":500,\"message\":\"Error\"}",mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.OK).body(studentDtos);
-        Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
     }
 
     @Test
@@ -77,9 +86,9 @@ public class StudentControllerTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/studentId/1").accept(MediaType.APPLICATION_JSON);
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
         System.out.println(mvcResult.getResponse().getContentAsString());
-        Assert.assertEquals(inputJson,mvcResult.getResponse().getContentAsString());
+        assertEquals(inputJson,mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.OK).body(studentDto);
-        Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
     }
 
     @Test
@@ -88,9 +97,9 @@ public class StudentControllerTest {
         when(studentService.getStudentDetailsById(1l)).thenReturn(studentDto);
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/studentId/1").accept(MediaType.APPLICATION_JSON);
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
-        Assert.assertEquals("StudentDetails are empty",mvcResult.getResponse().getContentAsString());
+        assertEquals("StudentDetails are empty",mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).body(studentDto);
-        Assert.assertEquals(HttpStatus.NOT_FOUND,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND,responseEntity.getStatusCode());
     }
 
     @Test
@@ -99,9 +108,9 @@ public class StudentControllerTest {
         when(studentService.getStudentDetailsById(1)).thenThrow(new RuntimeException("Error"));
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/studentId/1").accept(MediaType.APPLICATION_JSON);
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
-        Assert.assertEquals("{\"errorCode\":500,\"message\":\"Error\"}",mvcResult.getResponse().getContentAsString());
+        assertEquals("{\"errorCode\":500,\"message\":\"Error\"}",mvcResult.getResponse().getContentAsString());
         ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.OK).body(studentDto);
-        Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
     }
     @Test
     public void saveStudentDetails() throws Exception {
@@ -111,9 +120,9 @@ public class StudentControllerTest {
                 .content(inputJson).contentType(MediaType.APPLICATION_STREAM_JSON_VALUE);
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
         verify(studentService).saveStudentDetails(studentDto);
-        Assert.assertEquals("{\"errorCode\":0,\"message\":\"created\"}",mvcResult.getResponse().getContentAsString());
+        assertEquals("{\"errorCode\":0,\"message\":\"created\"}",mvcResult.getResponse().getContentAsString());
         int status = mvcResult.getResponse().getStatus();
-        Assert.assertEquals(200,status);
+        assertEquals(200,status);
     }
     @Test
     public void saveStudentDetails_InvalidParameters() throws Exception {
@@ -122,7 +131,7 @@ public class StudentControllerTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/insertStudentDetails")
                 .content(inputJson).contentType(MediaType.APPLICATION_STREAM_JSON_VALUE);
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
-        Assert.assertEquals("{\"Errors\":{\"Book \":\"Student book cannot be null\",\"name\":\"Student name cannot be null\",\"Email \":\"Student email cannot be null\"}}",mvcResult.getResponse().getContentAsString());
+        assertEquals("{\"Errors\":{\"Book \":\"Student book cannot be null\",\"name\":\"Student name cannot be null\",\"Email \":\"Student email cannot be null\"}}",mvcResult.getResponse().getContentAsString());
     }
 
     private String mapToJson(Object obj) throws JsonProcessingException {
